@@ -26,7 +26,7 @@ app.get('/certificate', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'certificateTemplate.html'));
   });
   app.get('/', (req, res) => {
-    res.status(200).json({message:'server live'});
+    res.status(200).json({message:'server live 2.0'});
   });
 
 require('./database/db');
