@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificate</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { width: 100%; padding: 20px; }
+        .border { border: 1px solid #000; }
+        .certificate-header { text-align: center; }
+        .certificate-content { text-align: center; margin-top: 50px; }
+        .title { font-size: 24px; font-weight: bold; }
+        .footer { margin-top: 50px; text-align: center; }
+        .verification { margin-top: 20px; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Border -->
+        <div class="row border">
+            <div class="col-6" style="background-color: black;"></div>
+            <div class="col-6" style="background-color: orange;"></div>
+        </div>
+
+        <!-- Logo -->
+        <div class="row">
+            <div class="col-6">
+                <img src="<%= logo1 %>" alt="Logo 1" style="height: 40px; width: 200px;" />
+            </div>
+            <div class="col-6" style="text-align: right;">
+                <img src="<%= logo2 %>" alt="Logo 2" style="width: 340px;" />
+            </div>
+        </div>
+
+        <!-- Category -->
+        <div class="row">
+            <div class="col-12">
+                <div class="category">
+                    <span>Category: <%= employee.category %></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Certificate Content -->
+        <div class="certificate-content">
+            <div class="title">
+                <h4>This certificate is proudly presented to</h4>
+                <h4><b><%= employee.name %></b></h4>
+                <h4>for the successful completion of the following courses:</h4>
+            </div>
+            <div>
+                <h4>RTA Psychometric Tests</h4>
+                <h4>RTA English Test</h4>
+            </div>
+
+            <!-- Scores and Percentage -->
+            <div class="scores">
+                <p><%= employee.rtaPsychometricTest %> out of 100</p>
+                <p><%= employee.rtaEnglishTest %> out of 150</p>
+            </div>
+            <div class="percentages">
+                <p>RTA Psychometric Test: <%= employee.rtaPsychometricPercentage %>%</p>
+                <p>RTA English Test: <%= employee.rtaEnglishPercentage %>%</p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="verification">
+                <p>Verified Certificate</p>
+                <p>Issued by: <%= siteUrl %></p>
+                <p>Please Verify at: <a href="<%= verificationUrl %>">Verification Link</a></p>
+            </div>
+        </div>
+
+        <!-- Border -->
+        <div class="row border">
+            <div class="col-6" style="background-color: orange;"></div>
+            <div class="col-6" style="background-color: black;"></div>
+        </div>
+    </div>
+</body>
+</html>

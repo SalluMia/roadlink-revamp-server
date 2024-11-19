@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificate</title>
+    <style>
+        @page {
+    size: 15.60in 11.03in; /* Set the page size in inches */
+    margin: 0; /* Remove default margin */
+}
+
+body {
+    width: 15.60in;
+    height: 11.03in;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    padding: 15px;
+    box-sizing: border-box;
+}
+
+        /* body { font-family: Arial, sans-serif;  } */
+    .container {
+    width: 100%;
+    /* border: 1px solid black; */
+    position: relative; /* For pseudo-element positioning */
+    z-index: 1; /* Ensure it stays on top of pseudo-element */
+    background-color: white; /* Fallback for non-supporting browsers */
+}
+
+.container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('http:localhost:5000/watermark.jpeg');
+    /* background-size: cover; Adjust to fit */
+    /* background-repeat: no-repeat; */
+    background-position: center;
+    opacity: 0.05; /* Set desired opacity */
+    z-index: -1; /* Place it behind the content */
+}
+        .border { border: 1px solid #000; }
+        .certificate-header { text-align: center; }
+        .certificate-content { text-align: center; margin-top: 50px; }
+        .title { font-size: 24px; font-weight: bold; }
+        .footer { margin-top: 50px; text-align: center; }
+        .verification { margin-top: 20px; font-size: 12px; }
+        .topbar-row { display: flex; }
+        .firstcol-6, .secondcol-6 {
+            flex: 1; /* Take equal space */
+            /* height: 20px; Ensure visible height */
+        }
+        .firstcol-6 { background-color: black; }
+        .secondcol-6 { background-color: orange; }
+        /* .logos-row{display: flexbox; border: 1px solid black; flex-direction: row;} */
+        .rightlogocol-6, .leftlogocol-6 {
+            flex: 1; /* Take equal space */
+        }
+        .tests{display: flex; width: 50%; border-bottom: 5px solid black; justify-content: space-between; margin: 15px auto;}
+        .RTA-psyc .RTA-eng{
+            flex: 1;
+            margin-bottom: 5px;
+        }
+        .RTA-psyc{
+            flex: 1;
+            font-size: 20px;
+            font-family: 'Times New Roman', Times, serif;
+            margin-bottom: 10px;
+        }
+        .RTA-eng{
+            flex: 1;
+            font-size: 20px;
+            font-family: 'Times New Roman', Times, serif;
+        }
+        .scores{
+            display: flex; width: 70%;  justify-content: center; gap: 250px; margin: 0 auto;
+            font-size: 20px;
+            /* border: 1px solid black; */
+        }
+        .percentages{
+            display: flex; width: 35%;  justify-content: space-between; margin: 0 auto;
+            font-size: 20px;
+            /* border: 1px solid black; */
+            /* padding: 0 20px; */
+        }
+
+        .bottom-row { display: flex; }
+        .bottom-left-6, .bottom-right-6 {
+            flex: 1; /* Take equal space */
+            height: 15px; /* Ensure visible height */
+        }
+        .bottom-right-6 { background-color: black; }
+        .bottom-left-6 { background-color: orange; }
+        .certificate-content {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .stamps-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+            padding: 0 20px;
+        }
+
+        .stamps-row .stamp-logo img,
+        .stamps-row .qr-code img {
+            width: 230px;
+            height: 230px;
+            /* border: 1px solid black; */
+            margin-left: 50px;
+        }
+
+        .verification-section {
+    width: 500px;
+    height: 140px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 0 auto;
+    text-align: center;
+    background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='14' ry='14' stroke='%23333' stroke-width='4' stroke-dasharray='28%2c 18' stroke-dashoffset='100' stroke-linecap='butt'/%3e%3c/svg%3e");
+    border-radius: 14px;
+
+        }
+        .verification-section p{
+            /* border: 1px solid black; */
+            margin: 0;
+        }
+
+
+        .footer-certificate {
+            margin-top: 40px;
+        }
+
+        .footer-certificate .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .footer-certificate .col-sm-3,
+        .footer-certificate .col-sm-2 {
+            text-align: center;
+            flex: 1;
+            padding: 10px;
+        }
+
+        .footer-certificate .col-sm-3 img {
+            width: 100%;
+            /* max-width: 230px; */
+            margin-bottom: 7px;
+        }
+
+        .footer-certificate .separator {
+            height: 1px;
+            background: black;
+            margin: 5px 0;
+        }
+
+        .topbar-row, .bottom-row {
+            display: flex;
+        }
+
+        .topbar-row > div,
+        .bottom-row > div {
+            flex: 1;
+            height: 20px;
+        }
+
+        .bottom-left-6 {
+            background-color: orange;
+        }
+
+        .bottom-right-6 {
+            background-color: black;
+        }
+    .long-text {
+     margin-top:-20px !important ;
+    }
+    .small-text {
+        margin-top: 0px !important;
+    }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Border -->
+        <div class="topbar-row">
+            <div class="firstcol-6" ></div>
+            <div class="secondcol-6"></div>
+        </div>
+
+        <!-- Logo -->
+        <div class="logos-row" style="display: flex;">
+            <div class="leftlogocol-6">
+                <img src="http:localhost:5000/logo.jpeg" alt="Logo 1" style="height: 80px;" />
+                <!-- <img src="/logoPic.png" alt="Logo 1" style="height: 80px;" /> -->
+            </div>
+            <div class="rightlogocol-6" style="text-align: end;">
+                <img src="http:localhost:5000/roadsTransport.png" alt="Logo 2"  style="width: 480px;"    />
+                <!-- <img src="/roadsTransport.png" alt="Logo 2" style="" /> -->
+            </div>
+        </div>
+
+        <!-- Category -->
+        <div class="row">
+            <div class="col-12">
+                <div class="category" style="margin-left: 20px;">
+                    <h2 style="font-size: 25px !important; font-family: 'Times New Roman', Times, serif; font-weight: 600;  font-size: larger; margin-bottom: 0;">Category: <span style="font-weight: normal; margin-bottom: 0 !important;">
+                        <%= employee.category %>
+                    </span></h2>
+                    <hr style="height: 4px; background-color: #000; width: 270px; margin-left: 0; margin: 0;">
+                </div>
+            </div>
+        </div>
+
+        <!-- Certificate Content -->
+        <div class="certificate-content">
+            <div class="title">
+                <h4 style="font-family: 'Times New Roman', Times, serif; font-weight: 500; font-size: 30px !important; margin-bottom: 24px;">This certificate is proudly presented to</h4>
+                <h4 style="font-weight: 600; margin: 0; font-size: 30px !important; "><%= employee.name %></h4>
+                <h4 style="font-family: 'Times New Roman', Times, serif; font-weight: 500; font-size: 30px !important; margin-top: 24px;">for the successful completion of the following courses:</h4>
+            </div>
+            <div class="tests">
+                <div class="RTA-psyc"><h4 style="font-weight: normal; margin: 0; font-size: 25px !important;">RTA Psychometric Tests</h4></div>
+               <div class="RTA-eng"> <h4 style="font-weight: normal; margin: 0; font-size: 25px !important;">RTA English Test</h4></div>
+            </div>
+
+            <!-- Scores and Percentage -->
+            <div class="scores">
+                <p style="margin: 0; font-size: 25px !important; " ><%= employee.rtaPsychometricTest %> out of 100</p>
+                <p style="margin: 0; font-size: 25px !important;"><%= employee.rtaEnglishTest %> out of 150</p>
+                <!-- <p>56 out of 100</p>
+                <p>76 out of 150</p> -->
+            </div>
+            <div class="percentages">
+                <p style="font-size: 25px !important;">(<%= Math.round((employee.rtaPsychometricTest / 100) * 100) %>%)</p>
+                <p style="font-size: 25px !important;">(<%= Math.round((employee.rtaEnglishTest / 150) * 100) %>%)</p>
+                <!-- <p>(50%)</p>
+                <p>(50%)</p> -->
+            </div>
+
+
+
+        </div>
+
+        <!-- stamps -->
+     <!-- Stamps Row -->
+     <div class="stamps-row">
+        <div class="stamp-logo">
+            <img src="http:localhost:5000/stamp.jpeg" alt="Stamp">
+        </div>
+        <div class="verification-section">
+            <p style="font-size: 20px; font-weight: 500;" >Verified Certificate</p>
+            <p style="font-size: 20px; font-weight: 500;">Issued by: <a href="www.roadslink.ae" style="color: #4361ee;">www.roadslink.ae</a></p>
+            <p style="font-size: 20px; font-weight: 500;">
+                Please verify at:
+                <a href="www.roadslink.ae/certification" style="color: #4361ee;">www.roadslink.ae/certification</a><br>
+                using passport number.
+            </p>
+        </div>
+        <div class="qr-code">
+            <img src="<%= qrCodeUrl %>" alt="QR Code">
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer-certificate">
+        <div class="row">
+            <div class="col-sm-3">
+                <img src="http:localhost:5000/signature.jpeg" alt="Authorized Signature">
+                <div class="separator"></div>
+                <p style="font-family: 'Times New Roman', Times, serif; display: flex; width: 100%; font-size: 18px;"><b>Authorized Signature and Stamp</b></p>
+            </div>
+            <div class="col-sm-2" style="padding-top: 40px !important; padding-left:20px ; padding-right: 20px;">
+                <p style="font-size: 20px; margin: 0;"><%= employee.certificateCode %></p>
+                <div class="separator"></div>
+                <p style="font-family: 'Times New Roman', Times, serif; display: flex; width: 100%; font-size: 19px; font-weight: normal !important;"><b>Certificate Code</b></p>
+            </div>
+            <div class="col-sm-2" style="padding-top: 40px !important; padding-left:20px ; padding-right: 20px;">
+                <p style="font-size: 20px; margin: 0;"><%= employee.studentId %></p>
+                <div class="separator"></div>
+                <p style="font-family: 'Times New Roman', Times, serif; display: flex; width: 100%; font-size: 19px;"><b>Student ID</b></p>
+            </div>
+            <div class="col-sm-3 <%= employee.companyName.length > 44 ? 'long-text' : 'small-text' %>" style="padding-top: 40px !important; padding-left:20px ; padding-right: 20px;">
+                <p style="font-size: 20px; margin: 0;"><%= employee.companyName %></p>
+                <div class="separator"></div>
+                <p style="font-family: 'Times New Roman', Times, serif; display: flex; width: 100%; font-size: 19px;"><b>Name of the Company</b></p>
+            </div>
+            <div class="col-sm-2" style="padding-top: 40px !important; padding-left:20px ; padding-right: 20px;">
+                <!-- Use JavaScript to format the date -->
+                <p style="font-size: 20px; margin: 0;" id="formattedDate"></p>
+                <div class="separator"></div>
+                <p style="font-family: 'Times New Roman', Times, serif; display: flex; width: 100%; font-size: 19px;"><b>Date</b></p>
+            </div>
+
+        </div>
+    </div>
+        <!-- Border -->
+        <div class="bottom-row">
+            <div class="bottom-left-6" style="background-color: orange;"></div>
+            <div class="bottom-right-6" style="background-color: black;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Assuming `employee.date` is a valid date string or timestamp
+        const employeeDate = new Date('<%= employee.date %>');
+
+        // Format the date as "13 Nov, 2024"
+        const formattedDate = employeeDate.toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+        });
+
+        // Set the formatted date to the paragraph
+        document.getElementById('formattedDate').innerText = formattedDate;
+        </script>
+</body>
+</html>
