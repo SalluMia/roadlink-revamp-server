@@ -7,7 +7,7 @@ const puppeteer = require('puppeteer');
 const ejs = require('ejs');
 const tmp = require('tmp');
 const QRCode = require('qrcode');
-
+const { chromium } = require('playwright');
 // Ensure the temp directory exists
 if (!fs.existsSync(tempDir)) {
     fs.mkdirSync(tempDir);
@@ -158,6 +158,11 @@ exports.getSearchEmployee = async (req, res) => {
 };
 
 
+// Add this new function to your controller
+
+
+
+// Keep the original downloadCertificate for actual downloads
 exports.downloadCertificate = async (req, res) => {
     let browser;
     
@@ -328,3 +333,89 @@ exports.viewCertificate = async (req, res) => {
         res.status(500).json({ message: 'Error viewing the certificate' });
     }
 };
+
+exports.unifiedCertificateHandler = async (req, res) => {
+    const { registrationId } = req.params;
+    let browser;
+
+    try {
+        if (!registrationId) {
+            return res.status(400).json({ message: "Registration ID is required" });
+        }
+
+        const employee = await Employee.findOne({ registrationId });
+
+        if (!employee) {
+            return res.status(404).json({ message: "Employee not found" });
+        }
+
+        const siteUrl = 'https://www.roadslink.in/api'; // or 'http://localhost:5000' in dev
+        const verificationUrl = `${siteUrl}/certification?registrationId=${employee.registrationId}&passportNumber=${employee.passportNumber}`;
+        const qrCodeUrl = `${siteUrl}/api/employee/certificate/${employee.registrationId}`;
+
+        const qrCodeDataUrl = await QRCode.toDataURL(qrCodeUrl);
+
+        const certificateData = {
+            employee,
+            logo1: 'path_to_logo_1',
+            logo2: 'path_to_logo_2',
+            siteUrl,
+            verificationUrl,
+            qrCodeUrl: qrCodeDataUrl
+        };
+
+        const htmlContent = await ejs.renderFile(
+            path.join(__dirname, '..', 'public', 'certificateTemplate.html'),
+            certificateData
+        );
+
+        browser = await puppeteer.launch({
+            headless: true,
+            args: ['--no-sandbox', '--disable-setuid-sandbox']
+        });
+
+        const page = await browser.newPage();
+        await page.setContent(htmlContent, {
+            waitUntil: 'networkidle0',
+            timeout: 30000
+        });
+
+        const pdfBuffer = await page.pdf({
+            width: '15.60in',
+            height: '11.03in',
+            landscape: true,
+            printBackground: true
+        });
+
+        await browser.close();
+
+        const fileName = `${employee.name.replace(/[^a-zA-Z0-9]/g, '_')}-${employee.studentId}.pdf`;
+
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `inline; filename="${fileName}"`);
+        res.setHeader('Content-Length', pdfBuffer.length);
+        res.setHeader('Cache-Control', 'public, max-age=3600');
+
+        return res.end(pdfBuffer);
+
+    } catch (error) {
+        console.error('Error displaying certificate as PDF:', error);
+
+        if (browser) {
+            try {
+                await browser.close();
+            } catch (err) {
+                console.error('Failed to close browser:', err);
+            }
+        }
+
+        return res.status(500).json({
+            message: 'Error displaying certificate as PDF',
+            error: error.message
+        });
+    }
+};
+
+
+
+

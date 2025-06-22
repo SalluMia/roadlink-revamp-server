@@ -1,21 +1,30 @@
 const express = require('express');
 const router = express.Router();
-const { getAllEmployees, addEmployee, updateEmployee, deleteEmployee, getSearchEmployee, downloadCertificate, viewCertificate } = require('../controllers/employeeController');
+const { 
+    getAllEmployees, 
+    addEmployee, 
+    updateEmployee, 
+    deleteEmployee, 
+    getSearchEmployee, 
+    downloadCertificate, 
+    viewCertificate,
+    viewCertificatePDF,  // Add the new function
+    generateTemplatedPDF,
+    generateRobustPuppeteerPDF,
+    unifiedCertificateHandler
+} = require('../controllers/employeeController');
 
-// Get all employees
+// Existing routes
 router.get('/getAllEmployees', getAllEmployees);
-
-// Add a new employee
 router.post('/addEmployees', addEmployee);
-
-// Update an employee
 router.put('/updateEmployee/:id', updateEmployee);
-
-// Delete an employee
 router.delete('/deleteEmployee/:id', deleteEmployee);
 router.get('/search', getSearchEmployee);
-router.get('/certificate/download/:registrationId', downloadCertificate);
-router.get('/certificate/view/:registrationId', viewCertificate);
 
+// Certificate routes
+
+router.get('/certificate/download/:registrationId', downloadCertificate); // Force download
+router.get('/certificate/view/:registrationId', viewCertificate);     // HTML view
+router.get('/certificate/pdf-certificate/:registrationId', unifiedCertificateHandler);
 
 module.exports = router;
