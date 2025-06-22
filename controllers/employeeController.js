@@ -159,6 +159,128 @@ exports.getSearchEmployee = async (req, res) => {
 
 
 exports.downloadCertificate = async (req, res) => {
+    let browser;
+    
+    try {
+        console.log('Step 1: Starting certificate download');
+        const { registrationId } = req.params;
+
+        if (!registrationId) {
+            console.log('Error: No registration ID provided');
+            return res.status(400).json({ message: "Registration ID is required" });
+        }
+
+        console.log('Step 2: Looking for employee with ID:', registrationId);
+        const employee = await Employee.findOne({ registrationId });
+        
+        if (!employee) {
+            console.log('Error: Employee not found');
+            return res.status(404).json({ message: "Employee not found" });
+        }
+
+        console.log('Step 3: Employee found, preparing URLs');
+        // const siteUrl = 'https://www.roadslink.in/api';
+        const siteUrl = 'http://localhost:5000';
+        const verificationUrl = `${siteUrl}/certification?registrationId=${employee.registrationId}&passportNumber=${employee.passportNumber}`;
+        const qrCodeUrl = `${siteUrl}/api/employee/certificate/view/${employee.registrationId}`;
+
+        console.log('Step 4: Generating QR code');
+        const qrCodeDataUrl = await QRCode.toDataURL(qrCodeUrl);
+
+        console.log('Step 5: Preparing certificate data');
+        const certificateData = {
+            employee,
+            logo1: 'path_to_logo_1',
+            logo2: 'path_to_logo_2',
+            siteUrl,
+            verificationUrl,
+            qrCodeUrl: qrCodeDataUrl,
+        };
+
+        console.log('Step 6: Rendering HTML template');
+        const htmlContent = await ejs.renderFile(
+            path.join(__dirname, '..', 'public', 'certificateTemplate.html'),
+            certificateData
+        );
+
+        console.log('Step 7: Launching Puppeteer browser');
+        browser = await puppeteer.launch({
+            headless: true,
+            timeout: 60000,
+            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+        });
+
+        console.log('Step 8: Creating new page');
+        const page = await browser.newPage();
+        
+        console.log('Step 9: Setting page content');
+        await page.setContent(htmlContent, { 
+            waitUntil: 'networkidle0',
+            timeout: 30000 
+        });
+
+        console.log('Step 10: Generating PDF');
+        const pdfBuffer = await page.pdf({
+            width: '15.60in',
+            height: '11.03in',
+            landscape: true,
+            printBackground: true,
+            timeout: 30000
+        });
+
+        console.log('Step 11: Closing browser');
+        await browser.close();
+        browser = null;
+
+        console.log('Step 12: Creating directory and file paths');
+        const generatedCertificatesDir = path.join(__dirname, '..', 'generated-certificates');
+        if (!fs.existsSync(generatedCertificatesDir)) {
+            fs.mkdirSync(generatedCertificatesDir, { recursive: true });
+        }
+
+        const fileName = `${employee.name.replace(/[^a-zA-Z0-9]/g, '_')}-${employee.studentId}.pdf`;
+        const filePath = path.join(generatedCertificatesDir, fileName);
+
+        console.log('Step 13: Writing PDF file');
+        fs.writeFileSync(filePath, pdfBuffer);
+
+        console.log('Step 14: Sending download response');
+        res.status(200).download(filePath, fileName, (err) => {
+            if (err) {
+                console.error('Error sending file:', err);
+                return res.status(500).json({ message: 'Error downloading the certificate' });
+            }
+
+            console.log('Step 15: Cleaning up file');
+            try {
+                if (fs.existsSync(filePath)) {
+                    fs.unlinkSync(filePath);
+                }
+            } catch (unlinkError) {
+                console.error('Error removing file:', unlinkError);
+            }
+        });
+
+    } catch (error) {
+        console.error('ERROR AT STEP:', error.message);
+        console.error('Full error:', error);
+        
+        if (browser) {
+            try {
+                await browser.close();
+            } catch (closeError) {
+                console.error('Error closing browser:', closeError);
+            }
+        }
+        
+        res.status(500).json({ 
+            message: 'Error generating the certificate',
+            error: error.message,
+            stack: error.stack
+        });
+    }
+};
+exports.viewCertificate = async (req, res) => {
     try {
         const { registrationId } = req.params;
 
@@ -168,7 +290,8 @@ exports.downloadCertificate = async (req, res) => {
 
         // Fetch the employee data based on registrationId
         const employee = await Employee.findOne({ registrationId });
-        console.log(employee)
+        console.log(employee);
+        
         if (!employee) {
             return res.status(404).json({ message: "Employee not found" });
         }
@@ -178,10 +301,10 @@ exports.downloadCertificate = async (req, res) => {
         const verificationUrl = `${siteUrl}/certification?registrationId=${employee.registrationId}&passportNumber=${employee.passportNumber}`;
         const qrCodeUrl = `${siteUrl}/api/employee/certificate/download/${employee.registrationId}`;
 
-        // Generate the QR code URL
+        // Generate the QR code URL for display
         const qrCodeDataUrl = await QRCode.toDataURL(qrCodeUrl);
 
-        // Prepare certificate data
+        // Prepare certificate data 
         const certificateData = {
             employee,
             logo1: 'path_to_logo_1',  // Update with correct path or URL
@@ -191,53 +314,17 @@ exports.downloadCertificate = async (req, res) => {
             qrCodeUrl: qrCodeDataUrl, // Pass the generated QR code DataURL to the template
         };
 
-        // Render the certificate HTML content using the EJS template
+        // Render the certificate HTML content using your existing template
         const htmlContent = await ejs.renderFile(
-            path.join(__dirname, '..', 'public', 'certificateTemplate.html'), // Adjust the correct path
+            path.join(__dirname, '..', 'public', 'certificateTemplate.html'), // Your existing template
             certificateData
         );
 
-        // Launch Puppeteer and generate PDF from the rendered HTML
-        const browser = await puppeteer.launch({
-            headless: true,
-            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
-        });
+        // Send the HTML response for viewing
+        res.status(200).send(htmlContent);
 
-        const page = await browser.newPage();
-        await page.setContent(htmlContent, { waitUntil: 'load' });
-
-        // Generate the PDF from the HTML content
-        const pdfBuffer = await page.pdf({
-            width: '15.60in',
-            height: '11.03in',
-            landscape: true,
-            printBackground: true
-        });
-
-        // Ensure the generated-certificates directory exists
-        const generatedCertificatesDir = path.join(__dirname, '..', 'generated-certificates');
-        if (!fs.existsSync(generatedCertificatesDir)) {
-            fs.mkdirSync(generatedCertificatesDir);
-        }
-
-        const fileName = `${employee.name}-${employee.studentId}.pdf`;
-        const filePath = path.join(generatedCertificatesDir, fileName);
-
-        // Save the PDF to the server
-        fs.writeFileSync(filePath, pdfBuffer);
-
-        // Send the generated PDF as a response
-        res.status(200).download(filePath, fileName, (err) => {
-            if (err) {
-                console.error('Error sending file:', err);
-                return res.status(500).json({ message: 'Error downloading the certificate' });
-            }
-
-            // Optionally remove the file after sending it
-            fs.unlinkSync(filePath);
-        });
     } catch (error) {
-        console.error('Error generating certificate:', error);
-        res.status(500).json({ message: 'Error generating the certificate' });
+        console.error('Error viewing certificate:', error);
+        res.status(500).json({ message: 'Error viewing the certificate' });
     }
 };

@@ -39,7 +39,7 @@ body {
     /* background-size: cover; Adjust to fit */
     /* background-repeat: no-repeat; */
     background-position: center;
-    opacity: 0.05; /* Set desired opacity */
+    opacity: 0.03; /* Set desired opacity */
     z-index: -1; /* Place it behind the content */
 }
         .border { border: 1px solid #000; }
@@ -115,7 +115,7 @@ body {
             margin-left: 50px;
         }
 
-        .verification-section {
+   .verification-section {
     width: 500px;
     height: 140px;
     display: flex;
@@ -131,36 +131,51 @@ body {
             /* border: 1px solid black; */
             margin: 0;
         }
+.footer-certificate {
+    margin-top: 30px;
+    padding: 0 !important;
+}
 
+.footer-certificate .row {
+    display: flex;
+    justify-content: space-between; /* Ensures space distribution */
+    align-items: flex-start;
+    gap: 20px; /* Adds equal gap between columns */
+}
 
-        .footer-certificate {
-            margin-top: 40px;
-        }
+.footer-certificate .col-sm-2,
+.footer-certificate .col-sm-3,
+.footer-certificate .col-sm-4 {
+    flex: 1; /* Adjusts flexibility */
+    margin: 0; /* Removes extra margins */
+}
 
-        .footer-certificate .row {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-        }
+.footer-certificate .col-sm-3,
+.footer-certificate .col-sm-4 {
+    flex: 2; /* Sets proportional size */
+}
+        .footer-certificate .col-sm-4{
+                
+                margin-top:7px;
+           }
 
-        .footer-certificate .col-sm-3,
-        .footer-certificate .col-sm-2 {
-            text-align: center;
-            flex: 1;
-            padding: 10px;
-        }
-
-        .footer-certificate .col-sm-3 img {
-            width: 100%;
+        .footer-certificate .col-sm-4 img {
+            width: 70%;
             /* max-width: 230px; */
-            margin-bottom: 7px;
+            /* margin-bottom: 7px; */
         }
 
         .footer-certificate .separator {
             height: 1px;
             background: black;
-            margin: 5px 0;
+            margin: 3px 0;
         }
+        .footer-certificate  #p-tag{
+            font-size: 16px !important;
+          /* color:blue !important; */
+        }
+
+
 
         .topbar-row, .bottom-row {
             display: flex;
@@ -179,12 +194,23 @@ body {
         .bottom-right-6 {
             background-color: black;
         }
-    .long-text {
-     margin-top:-20px !important ;
-    }
-    .small-text {
+
+    #small-text {
         margin-top: 0px !important;
+        padding-top: 40px !important;
+        border: 1px solid yellow !important;
     }
+    #medium-text{
+        margin-top: 0px !important;
+        padding-top: 30px !important;
+        border: 1px solid blue !important;
+    }
+    #long-text {
+     margin-top:-25px !important ;
+     padding-top: -0px !important;
+     border: 1px solid red !important;
+    }
+
     </style>
 </head>
 <body>
@@ -257,10 +283,10 @@ body {
         </div>
         <div class="verification-section">
             <p style="font-size: 20px; font-weight: 500;" >Verified Certificate</p>
-            <p style="font-size: 20px; font-weight: 500;">Issued by: <a href="www.roadslink.ae" style="color: #4361ee;">www.roadslink.ae</a></p>
+            <p style="font-size: 20px; font-weight: 500;">Issued by: <a href="www.roadslink.ae" style="color: #0d6efd">www.roadslink.ae</a></p>
             <p style="font-size: 20px; font-weight: 500;">
                 Please verify at:
-                <a href="www.roadslink.ae/certification" style="color: #4361ee;">www.roadslink.ae/certification</a><br>
+                <a href="www.roadslink.ae/certification" style="color: #0d6efd;">www.roadslink.ae/certification</a><br>
                 using passport number.
             </p>
         </div>
@@ -270,33 +296,44 @@ body {
     </div>
 
     <!-- Footer -->
-    <div class="footer-certificate">
+    <div class="footer-certificate " >
         <div class="row">
-            <div class="col-sm-3">
-                <img src="https://www.roadslink.in/api/signature.jpeg" alt="Authorized Signature">
+            <div class="col-sm-4" >
+                <img src="https://www.roadslink.in/api/gehadh.png" alt="Authorized Signature" style="margin-top: 8px !important;">
                 <div class="separator"></div>
-                <p style="font-family: 'Times New Roman', Times, serif; display: flex; width: 100%; font-size: 18px;"><b>Authorized Signature and Stamp</b></p>
+                <p id="p-tag" style="font-family: 'Times New Roman', Times, serif; display: flex; width: 100%;  font-weight: 600 !important;">Authorized Signature and Stamp</p>
             </div>
-            <div class="col-sm-2" style="padding-top: 40px !important; padding-left:20px ; padding-right: 20px;">
+            <div class="col-sm-2 " style="padding-top: 40px !important; padding-left:20px ; padding-right: 20px;">
                 <p style="font-size: 20px; margin: 0;"><%= employee.certificateCode %></p>
                 <div class="separator"></div>
-                <p style="font-family: 'Times New Roman', Times, serif; display: flex; width: 100%; font-size: 19px; font-weight: normal !important;"><b>Certificate Code</b></p>
+                <p id="p-tag" style="font-family: 'Times New Roman', Times, serif; display: flex; width: 100%;  font-weight:600 !important;">Certificate Code</p>
             </div>
-            <div class="col-sm-2" style="padding-top: 40px !important; padding-left:20px ; padding-right: 20px;">
+            <div class="col-sm-2 " style="padding-top: 40px !important; padding-left:20px ; padding-right: 20px;">
                 <p style="font-size: 20px; margin: 0;"><%= employee.studentId %></p>
                 <div class="separator"></div>
-                <p style="font-family: 'Times New Roman', Times, serif; display: flex; width: 100%; font-size: 19px;"><b>Student ID</b></p>
+                <p id="p-tag" style="font-family: 'Times New Roman', Times, serif; display: flex; width: 100%; font-weight:600 !important ">Student ID</p>
             </div>
-            <div class="col-sm-3 <%= employee.companyName.length > 44 ? 'long-text' : 'small-text' %>" style="padding-top: 40px !important; padding-left:20px ; padding-right: 20px;">
-                <p style="font-size: 20px; margin: 0;"><%= employee.companyName %></p>
-                <div class="separator"></div>
-                <p style="font-family: 'Times New Roman', Times, serif; display: flex; width: 100%; font-size: 19px;"><b>Name of the Company</b></p>
+            <div class="col-sm-3" style="position: relative; height: 120px; ">
+                <!-- Wrapping Content -->
+                <p  style="font-size: 20px; margin: 0; word-wrap: break-word; overflow-wrap: break-word; height: 55px; overflow: hidden; display: flex; justify-content: start; align-items: end; ">
+                   <%= employee.companyName %>
+                </p>
+
+                <!-- Fixed Separator -->
+                <div class="separator" style="height: 1px;margin-bottom: 5px; background-color: #000; position: absolute; top: 62px; left: 0; right: 0; "></div>
+
+                <!-- Fixed Bottom Text -->
+                <p id="p-tag" style="font-family: 'Times New Roman', Times, serif;  margin: 0; position: absolute; top: 85px; left: 0;font-weight:600 !important;  width: 100%; text-align: left;">
+                    Name of the Company
+                </p>
             </div>
-            <div class="col-sm-2" style="padding-top: 40px !important; padding-left:20px ; padding-right: 20px;">
+
+
+            <div class="col-sm-2 " style="padding-top: 40px !important; padding-left:20px ; padding-right: 20px;">
                 <!-- Use JavaScript to format the date -->
-                <p style="font-size: 20px; margin: 0;" id="formattedDate"></p>
+                <p style="font-size: 20px; margin: 0; " id="formattedDate"></p>
                 <div class="separator"></div>
-                <p style="font-family: 'Times New Roman', Times, serif; display: flex; width: 100%; font-size: 19px;"><b>Date</b></p>
+                <p id="p-tag" style="font-family: 'Times New Roman', Times, serif; display: flex; width: 100%; font-weight:bold; ">Date</p>
             </div>
 
         </div>
@@ -309,12 +346,12 @@ body {
     </div>
 
     <script>
-        // Assuming `employee.date` is a valid date string or timestamp
+        // Assuming employee.date is a valid date string or timestamp
         const employeeDate = new Date('<%= employee.date %>');
 
         // Format the date as "13 Nov, 2024"
-        const formattedDate = employeeDate.toLocaleDateString('en-GB', {
-            day: '2-digit',
+        const formattedDate = employeeDate.toLocaleDateString('en-US', {
+            day: 'numeric',
             month: 'short',
             year: 'numeric'
         });
@@ -324,3 +361,4 @@ body {
         </script>
 </body>
 </html>
+
