@@ -8,6 +8,12 @@ const ejs = require('ejs');
 const tmp = require('tmp');
 const QRCode = require('qrcode');
 const { chromium } = require('playwright');
+
+// Environment configuration
+const NODE_ENV = process.env.NODE_ENV || 'development';
+const SITE_URL = process.env.SITE_URL || (NODE_ENV === 'development' ? 'http://localhost:5000' : 'https://www.roadslink.in/api');
+const VERIFY_LINK = process.env.VERIFY_LINK || (NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://roadslink.in');
+
 // Ensure the temp directory exists
 if (!fs.existsSync(tempDir)) {
     fs.mkdirSync(tempDir);
@@ -185,7 +191,7 @@ exports.downloadCertificate = async (req, res) => {
 
         console.log('Step 3: Employee found, preparing URLs');
         // const siteUrl = 'https://www.roadslink.in/api';
-        const siteUrl = 'http://localhost:5000';
+        const siteUrl = SITE_URL;
         const verificationUrl = `${siteUrl}/certification?registrationId=${employee.registrationId}&passportNumber=${employee.passportNumber}`;
         const qrCodeUrl = `${siteUrl}/api/employee/certificate/view/${employee.registrationId}`;
 
@@ -243,7 +249,7 @@ exports.downloadCertificate = async (req, res) => {
             fs.mkdirSync(generatedCertificatesDir, { recursive: true });
         }
 
-        const fileName = `${employee.name.replace(/[^a-zA-Z0-9]/g, '_')}-${employee.studentId}.pdf`;
+        const fileName = `${employee.name.replace(/[^a-zA-Z0-9]/g, '_')}-${employee.registrationId}.pdf`;
         const filePath = path.join(generatedCertificatesDir, fileName);
 
         console.log('Step 13: Writing PDF file');
@@ -302,7 +308,7 @@ exports.viewCertificate = async (req, res) => {
         }
 
         // Prepare dynamic URLs
-        const siteUrl = 'https://www.roadslink.in/api';
+        const siteUrl = SITE_URL;
         const verificationUrl = `${siteUrl}/certification?registrationId=${employee.registrationId}&passportNumber=${employee.passportNumber}`;
         const qrCodeUrl = `${siteUrl}/api/employee/certificate/download/${employee.registrationId}`;
 
@@ -339,20 +345,27 @@ exports.unifiedCertificateHandler = async (req, res) => {
     let browser;
 
     try {
+        console.log('unifiedCertificateHandler: Starting PDF generation for registrationId:', registrationId);
+        
         if (!registrationId) {
+            console.log('unifiedCertificateHandler: No registration ID provided');
             return res.status(400).json({ message: "Registration ID is required" });
         }
 
         const employee = await Employee.findOne({ registrationId });
+        console.log('unifiedCertificateHandler: Employee found:', employee ? 'Yes' : 'No');
 
         if (!employee) {
+            console.log('unifiedCertificateHandler: Employee not found for registrationId:', registrationId);
             return res.status(404).json({ message: "Employee not found" });
         }
 
-        const siteUrl = 'https://www.roadslink.in/api'; // or 'http://localhost:5000' in dev
+        console.log('unifiedCertificateHandler: Starting PDF generation process');
+        const siteUrl = SITE_URL; // or 'http://localhost:5000' in dev
         const verificationUrl = `${siteUrl}/certification?registrationId=${employee.registrationId}&passportNumber=${employee.passportNumber}`;
         const qrCodeUrl = `${siteUrl}/api/employee/certificate/${employee.registrationId}`;
 
+        console.log('unifiedCertificateHandler: Generating QR code');
         const qrCodeDataUrl = await QRCode.toDataURL(qrCodeUrl);
 
         const certificateData = {
@@ -364,22 +377,26 @@ exports.unifiedCertificateHandler = async (req, res) => {
             qrCodeUrl: qrCodeDataUrl
         };
 
+        console.log('unifiedCertificateHandler: Rendering HTML template');
         const htmlContent = await ejs.renderFile(
             path.join(__dirname, '..', 'public', 'certificateTemplate.html'),
             certificateData
         );
 
+        console.log('unifiedCertificateHandler: Launching browser');
         browser = await puppeteer.launch({
             headless: true,
             args: ['--no-sandbox', '--disable-setuid-sandbox']
         });
 
+        console.log('unifiedCertificateHandler: Creating new page');
         const page = await browser.newPage();
         await page.setContent(htmlContent, {
             waitUntil: 'networkidle0',
             timeout: 30000
         });
 
+        console.log('unifiedCertificateHandler: Generating PDF');
         const pdfBuffer = await page.pdf({
             width: '15.60in',
             height: '11.03in',
@@ -387,19 +404,22 @@ exports.unifiedCertificateHandler = async (req, res) => {
             printBackground: true
         });
 
+        console.log('unifiedCertificateHandler: Closing browser');
         await browser.close();
 
-        const fileName = `${employee.name.replace(/[^a-zA-Z0-9]/g, '_')}-${employee.studentId}.pdf`;
+        const fileName = `${employee.name.replace(/[^a-zA-Z0-9]/g, '_')}-${employee.registrationId}.pdf`;
+        console.log('unifiedCertificateHandler: Sending PDF response, fileName:', fileName);
 
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', `inline; filename="${fileName}"`);
         res.setHeader('Content-Length', pdfBuffer.length);
         res.setHeader('Cache-Control', 'public, max-age=3600');
 
+        console.log('unifiedCertificateHandler: PDF generation completed successfully');
         return res.end(pdfBuffer);
 
     } catch (error) {
-        console.error('Error displaying certificate as PDF:', error);
+        console.error('unifiedCertificateHandler: Error displaying certificate as PDF:', error);
 
         if (browser) {
             try {
@@ -412,6 +432,47 @@ exports.unifiedCertificateHandler = async (req, res) => {
         return res.status(500).json({
             message: 'Error displaying certificate as PDF',
             error: error.message
+        });
+    }
+};
+
+exports.serveGeneratedPDF = async (req, res) => {
+    try {
+        const { filename } = req.params;
+        
+        if (!filename) {
+            return res.status(400).json({ message: "Filename is required" });
+        }
+
+        // Sanitize filename to prevent directory traversal
+        const sanitizedFilename = path.basename(filename);
+        
+        const generatedCertificatesDir = path.join(__dirname, '..', 'generated-certificates');
+        const filePath = path.join(generatedCertificatesDir, sanitizedFilename);
+
+        // Check if file exists
+        if (!fs.existsSync(filePath)) {
+            return res.status(404).json({ message: "PDF file not found" });
+        }
+
+        // Get file stats
+        const stats = fs.statSync(filePath);
+        
+        // Set headers for PDF display
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Length', stats.size);
+        res.setHeader('Content-Disposition', `inline; filename="${sanitizedFilename}"`);
+        res.setHeader('Cache-Control', 'public, max-age=3600');
+
+        // Create read stream and pipe to response
+        const fileStream = fs.createReadStream(filePath);
+        fileStream.pipe(res);
+
+    } catch (error) {
+        console.error('Error serving generated PDF:', error);
+        res.status(500).json({ 
+            message: 'Error serving the PDF file',
+            error: error.message 
         });
     }
 };
