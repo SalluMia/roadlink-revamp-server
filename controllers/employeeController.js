@@ -363,7 +363,7 @@ exports.unifiedCertificateHandler = async (req, res) => {
         console.log('unifiedCertificateHandler: Starting PDF generation process');
         const siteUrl = SITE_URL; // or 'http://localhost:5000' in dev
         const verificationUrl = `${siteUrl}/certification?registrationId=${employee.registrationId}&passportNumber=${employee.passportNumber}`;
-        const qrCodeUrl = `${siteUrl}/api/employee/certificate/${employee.registrationId}`;
+        const qrCodeUrl = `${siteUrl}/api/employee/certificate/pdf-certificate/${employee.registrationId}`;
 
         console.log('unifiedCertificateHandler: Generating QR code');
         const qrCodeDataUrl = await QRCode.toDataURL(qrCodeUrl);
