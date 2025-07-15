@@ -156,7 +156,6 @@
             height: 1px;
             background: black;
             margin-top: 3px; 
-            width: 80% !important;
         }
         
         .footer-certificate #p-tag {
@@ -260,30 +259,33 @@
                 <div class="col-sm-4" style="margin-top: 5px !important;">
                   <div class="footer-cols" >
                     <img src="https://www.roadslink.in/api/gehadh.png" alt="Authorized Signature" style="margin-top: 8px !important;">
-                    <div class="separator"></div>
+                    <div class="separator" style="width: 80% !important;"></div>
                     <p id="p-tag" style="font-family: 'Times New Roman', Times, serif; display: flex; width: 100%; font-weight: 600 !important;">Authorized Signature and Stamp</p>
                   </div>
                 </div>
                 <div class="col-sm-2" style="padding-top: 40px !important; padding-left:20px ; padding-right: 20px;">
                   <div class="footer-cols">
                     <p style="font-size: 20px; margin: 0; text-align:start; "><%= employee.certificateCode %></p>
-                    <div class="separator"></div>
+                    <div class="separator" style="width: 85% !important;"></div>
                     <p id="p-tag" style="font-family: 'Times New Roman', Times, serif; display: flex; width: 100%; font-weight:600 !important;">Certificate Code</p>
                   </div>
                 </div>
                 <div class="col-sm-2" style="padding-top: 40px !important; padding-left:20px ; padding-right: 20px;">
                    <div class="footer-cols">
                     <p style="font-size: 20px; margin: 0; text-align: start; "><%= employee.studentId %></p>
-                    <div class="separator"></div>
+                    <div class="separator" style="width: 80% !important;"></div>
                     <p id="p-tag" style="font-family: 'Times New Roman', Times, serif; display: flex; width: 100%; font-weight:600 !important;">Student ID</p>
                    </div>
                 </div>
                 <div class="col-sm-3" style="position: relative; height: 120px;">
                    <div class="footer-cols">
-                    <p style="font-size: 20px; margin: 0; word-wrap: break-word;  overflow-wrap: break-word; height: 62px; overflow: hidden; display: flex; justify-content: start; align-items: end;">
-                        <%= employee.companyName %>
-                    </p>
-                    <div class="separator" style="height: 1px;margin-bottom: 5px; background-color: #000; position: absolute; top: 62px; left: 0; right: 0;"></div>
+                    <div id="companyNameContainer" style="width: 80%; height: 62px; overflow: hidden;">
+                        <p id="companyNameText" style="font-size: 20px; margin: 0; word-wrap: break-word; overflow-wrap: break-word; height: 62px; display: flex; justify-content: start; align-items: end; width: 100%;">
+                            <%= employee.companyName %>
+                        </p>
+                    </div>
+                    <div id="companySeparator" class="separator" style="height: 1px;margin-bottom: 5px; background-color: #000; 
+                    position: absolute; top: 62px; left: 0; width: 80% !important;"></div>
                     <p id="p-tag" style="font-family: 'Times New Roman', Times, serif; margin: 0; position: absolute; top: 65px; left: 0;font-weight:600 !important; width: 100%; text-align: left;">
                         Name of the Company
                     </p>
@@ -292,7 +294,7 @@
                 <div class="col-sm-2" style="padding-top: 40px !important; padding-left:20px ; padding-right: 20px;">
                     <div class="footer-cols">
                         <p style="font-size: 20px; margin: 0; text-align:start; " id="formattedDate"></p>
-                    <div class="separator"></div>
+                    <div class="separator" style="width: 80% !important;"></div>
                     <p id="p-tag" style="font-family: 'Times New Roman', Times, serif; display: flex; width: 100%; font-weight:bold;">Date</p>
                 
                     </div>
@@ -316,6 +318,55 @@
             year: 'numeric'
         });
         document.getElementById('formattedDate').innerText = formattedDate;
+
+        // Check if company name content is wrapped and adjust separator width
+        function adjustSeparatorWidth() {
+            const companyNameText = document.getElementById('companyNameText');
+            const companyNameContainer = document.getElementById('companyNameContainer');
+            const companySeparator = document.getElementById('companySeparator');
+            
+            if (companyNameText && companySeparator && companyNameContainer) {
+                // Create a temporary element to measure text width
+                const tempElement = document.createElement('div');
+                tempElement.style.cssText = `
+                    position: absolute;
+                    visibility: hidden;
+                    white-space: nowrap;
+                    font-size: 20px;
+                    font-family: inherit;
+                `;
+                tempElement.textContent = companyNameText.textContent;
+                document.body.appendChild(tempElement);
+                
+                // Get the width of the text without wrapping
+                const textWidth = tempElement.offsetWidth;
+                
+                // Get the width of the container (80% of parent)
+                const containerWidth = companyNameContainer.offsetWidth;
+                
+                // Remove the temporary element
+                document.body.removeChild(tempElement);
+                
+                // If text width is greater than container width, content will be wrapped
+                const isWrapped = textWidth > containerWidth;
+                
+                console.log('Text width:', textWidth, 'Container width:', containerWidth, 'Is wrapped:', isWrapped);
+                
+                // Set separator width to match the container width
+                if (isWrapped) {
+                    // If content is wrapped, use 90% to accommodate the wrapped text
+                    companySeparator.style.width = '90%';
+                    console.log('Content is wrapped - Setting separator width to 90%');
+                } else {
+                    // If content is not wrapped, use 80% to match the container
+                    companySeparator.style.width = '80%';
+                    console.log('Content is not wrapped - Setting separator width to 80%');
+                }
+            }
+        }
+
+        // Run the adjustment after the page loads
+        window.addEventListener('load', adjustSeparatorWidth);
     </script>
 </body>
 </html>
