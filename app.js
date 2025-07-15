@@ -32,7 +32,7 @@ const app = express();
 // CORS configuration
 const corsOptions = {
   origin: NODE_ENV === 'development' 
-    ? [FRONTEND_URL, 'http://localhost:3000', 'http://localhost:5173']
+    ? [FRONTEND_URL, 'http://localhost:3000', 'http://localhost:5174']
     : ['https://roadslink.in', 'https://www.roadslink.in'],
   credentials: true,
   optionsSuccessStatus: 200
