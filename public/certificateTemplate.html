@@ -156,6 +156,7 @@
             height: 1px;
             background: black;
             margin-top: 3px; 
+            width: 80% !important;
         }
         
         .footer-certificate #p-tag {
@@ -173,6 +174,7 @@
             flex: 1;
             height: 20px;
         }
+
     </style>
 </head>
 <body>
@@ -256,21 +258,28 @@
         <div class="footer-certificate">
             <div class="row">
                 <div class="col-sm-4" style="margin-top: 5px !important;">
+                  <div class="footer-cols" >
                     <img src="https://www.roadslink.in/api/gehadh.png" alt="Authorized Signature" style="margin-top: 8px !important;">
                     <div class="separator"></div>
                     <p id="p-tag" style="font-family: 'Times New Roman', Times, serif; display: flex; width: 100%; font-weight: 600 !important;">Authorized Signature and Stamp</p>
+                  </div>
                 </div>
                 <div class="col-sm-2" style="padding-top: 40px !important; padding-left:20px ; padding-right: 20px;">
+                  <div class="footer-cols">
                     <p style="font-size: 20px; margin: 0; text-align:start; "><%= employee.certificateCode %></p>
                     <div class="separator"></div>
                     <p id="p-tag" style="font-family: 'Times New Roman', Times, serif; display: flex; width: 100%; font-weight:600 !important;">Certificate Code</p>
+                  </div>
                 </div>
                 <div class="col-sm-2" style="padding-top: 40px !important; padding-left:20px ; padding-right: 20px;">
+                   <div class="footer-cols">
                     <p style="font-size: 20px; margin: 0; text-align: start; "><%= employee.studentId %></p>
                     <div class="separator"></div>
                     <p id="p-tag" style="font-family: 'Times New Roman', Times, serif; display: flex; width: 100%; font-weight:600 !important;">Student ID</p>
+                   </div>
                 </div>
                 <div class="col-sm-3" style="position: relative; height: 120px;">
+                   <div class="footer-cols">
                     <p style="font-size: 20px; margin: 0; word-wrap: break-word;  overflow-wrap: break-word; height: 62px; overflow: hidden; display: flex; justify-content: start; align-items: end;">
                         <%= employee.companyName %>
                     </p>
@@ -278,11 +287,15 @@
                     <p id="p-tag" style="font-family: 'Times New Roman', Times, serif; margin: 0; position: absolute; top: 65px; left: 0;font-weight:600 !important; width: 100%; text-align: left;">
                         Name of the Company
                     </p>
+                   </div>
                 </div>
                 <div class="col-sm-2" style="padding-top: 40px !important; padding-left:20px ; padding-right: 20px;">
-                    <p style="font-size: 20px; margin: 0; text-align:start; " id="formattedDate"></p>
+                    <div class="footer-cols">
+                        <p style="font-size: 20px; margin: 0; text-align:start; " id="formattedDate"></p>
                     <div class="separator"></div>
                     <p id="p-tag" style="font-family: 'Times New Roman', Times, serif; display: flex; width: 100%; font-weight:bold;">Date</p>
+                
+                    </div>
                 </div>
             </div>
         </div>

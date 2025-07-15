@@ -310,7 +310,7 @@ exports.viewCertificate = async (req, res) => {
         // Prepare dynamic URLs
         const siteUrl = SITE_URL;
         const verificationUrl = `${siteUrl}/certification?registrationId=${employee.registrationId}&passportNumber=${employee.passportNumber}`;
-        const qrCodeUrl = `${siteUrl}/api/employee/certificate/download/${employee.registrationId}`;
+        const qrCodeUrl = `${siteUrl}/api/employee/certificate/pdf-certificate/${employee.registrationId}`;
 
         // Generate the QR code URL for display
         const qrCodeDataUrl = await QRCode.toDataURL(qrCodeUrl);
